@@ -1,6 +1,6 @@
 # homebrew-trans
 
-Homebrew tap for the `trans` CLI.
+Homebrew tap for the `trans` CLI (translation utility for react-intl JSON files).
 
 ## Install
 
@@ -9,8 +9,19 @@ brew tap mbuvarp/trans
 brew install trans
 ```
 
-## Update formula
+## What you get
 
-1. Create a new release in https://github.com/mbuvarp/trans (tagged like `v0.1.0`).
-2. Update `Formula/trans.rb` with the new `url` and `sha256`.
-3. Commit and push to this tap repo.
+- `trans` installed to your PATH via Homebrew
+- Updates delivered by new releases in the main `trans` repo
+
+## Usage
+
+```bash
+trans --help
+trans init
+```
+
+## Troubleshooting
+
+- Ensure you have the tap added: `brew tap mbuvarp/trans`
+- Reinstall if needed: `brew reinstall trans`
