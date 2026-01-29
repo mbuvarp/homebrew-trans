@@ -2,7 +2,7 @@ class Trans < Formula
   desc "Translation utility for react-intl JSON files"
   homepage "https://github.com/mbuvarp/trans"
   url "https://github.com/mbuvarp/trans/archive/refs/tags/v0.1.4.tar.gz"
-  sha256 "b3d995f73fbfad8d8e9c76797a025c4a8023b5040b0c15cbc76d25932df3daf6"
+  sha256 "7c48102660d1801d2d1f4a66701e68cd3825c59a5c9d35535963a8b9310c3e93"
   bottle do
     root_url "https://github.com/mbuvarp/trans/releases/download/v0.1.4"
     cellar :any_skip_relocation
