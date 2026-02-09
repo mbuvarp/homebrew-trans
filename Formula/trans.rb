@@ -1,8 +1,8 @@
 class Trans < Formula
   desc "Translation utility for react-intl JSON files"
   homepage "https://github.com/mbuvarp/trans"
-  url "https://github.com/mbuvarp/trans/archive/refs/tags/v0.1.6.tar.gz"
-  sha256 "b63d920875528aebe1fa842959557f2d4275edf295c3ed74806b9a25dfa283e2"
+  url "https://github.com/mbuvarp/trans/archive/refs/tags/v0.1.7.tar.gz"
+  sha256 "8cfaf7d2d3fa533db257d8c22978a3f237f48200444dc34bf1e5e38b4a420351"
   # Bottle metadata removed; source-only installs are supported.
 
   depends_on "rust" => :build
