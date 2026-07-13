@@ -9,6 +9,7 @@ on:
 jobs:
   test-bot-macos:
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-15-intel, macos-26]
     runs-on: ${{ matrix.os }}
@@ -44,14 +45,14 @@ jobs:
         if: github.event_name == 'pull_request'
         run: brew test-bot --only-formulae
 
-      - name: Build bottle with unbottled build dependencies
-        if: github.event_name == 'pull_request'
+      - name: Build Intel bottle with compatible Rust bottle
+        if: github.event_name == 'pull_request' && matrix.os == 'macos-15-intel'
         run: |
           if compgen -G '*.bottle.*' > /dev/null; then
             exit 0
           fi
-          cargo --version
-          brew install --build-bottle --ignore-dependencies mbuvarp/trans/trans
+          brew install --force-bottle rust
+          brew install --build-bottle mbuvarp/trans/trans
           brew test mbuvarp/trans/trans
           brew bottle --json mbuvarp/trans/trans
 
