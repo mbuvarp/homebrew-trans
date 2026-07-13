@@ -50,7 +50,8 @@ jobs:
           if compgen -G '*.bottle.*' > /dev/null; then
             exit 0
           fi
-          brew install --build-bottle mbuvarp/trans/trans
+          cargo --version
+          brew install --build-bottle --ignore-dependencies mbuvarp/trans/trans
           brew test mbuvarp/trans/trans
           brew bottle --json mbuvarp/trans/trans
 
@@ -60,6 +61,7 @@ jobs:
         with:
           name: bottles_${{ matrix.os }}
           path: '*.bottle.*'
+          if-no-files-found: error
 
   test-bot-linux:
     runs-on: ubuntu-latest
@@ -98,19 +100,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: brew test-bot --only-formulae
 
-      - name: Build bottle with unbottled build dependencies
-        if: github.event_name == 'pull_request'
-        run: |
-          if compgen -G '*.bottle.*' > /dev/null; then
-            exit 0
-          fi
-          brew install --build-bottle mbuvarp/trans/trans
-          brew test mbuvarp/trans/trans
-          brew bottle --json mbuvarp/trans/trans
-
       - name: Upload bottles as artifact
         if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: bottles_ubuntu-latest
           path: '*.bottle.*'
+          if-no-files-found: error
