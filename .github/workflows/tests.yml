@@ -32,6 +32,18 @@ jobs:
           key: ${{ matrix.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ matrix.os }}-rubygems-
 
+      - name: Detect formula changes
+        id: formula-changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if git diff --quiet "$BASE_SHA" HEAD -- Formula/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Clean up before tests
         run: brew test-bot --only-cleanup-before
 
@@ -42,11 +54,11 @@ jobs:
         run: brew test-bot --only-tap-syntax
 
       - name: Build and test bottles
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.formula-changes.outputs.changed == 'true'
         run: brew test-bot --only-formulae
 
       - name: Build Intel bottle with compatible Rust bottle
-        if: github.event_name == 'pull_request' && matrix.os == 'macos-15-intel'
+        if: github.event_name == 'pull_request' && steps.formula-changes.outputs.changed == 'true' && matrix.os == 'macos-15-intel'
         run: |
           if compgen -G '*.bottle.*' > /dev/null; then
             exit 0
@@ -60,7 +72,7 @@ jobs:
             mbuvarp/trans/trans
 
       - name: Upload bottles as artifact
-        if: always() && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request' && steps.formula-changes.outputs.changed == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: bottles_${{ matrix.os }}
@@ -91,6 +103,18 @@ jobs:
           key: ubuntu-latest-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ubuntu-latest-rubygems-
 
+      - name: Detect formula changes
+        id: formula-changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if git diff --quiet "$BASE_SHA" HEAD -- Formula/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Clean up before tests
         run: brew test-bot --only-cleanup-before
 
@@ -101,11 +125,11 @@ jobs:
         run: brew test-bot --only-tap-syntax
 
       - name: Build and test bottles
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.formula-changes.outputs.changed == 'true'
         run: brew test-bot --only-formulae
 
       - name: Upload bottles as artifact
-        if: always() && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request' && steps.formula-changes.outputs.changed == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: bottles_ubuntu-latest
