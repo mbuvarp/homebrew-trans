@@ -5,10 +5,10 @@ class Trans < Formula
   sha256 "7400ac94a53021b55b61432918312e956481104fc963ab006489925fd5a6f447"
 
   bottle do
-    root_url "https://github.com/mbuvarp/homebrew-trans/releases/download/trans-0.6.2"
-    sha256 cellar: :any_skip_relocation, arm64_tahoe:  "0ea7dc59616451d4d1823939b9f62c3fe6a3451efb323057a610651eff7f0ef1"
-    sha256 cellar: :any_skip_relocation, sequoia:      "e94cc67c79ff8c8f4be96b37a4f83d933ce035a9880525d2ca0edd9856ae3590"
-    sha256 cellar: :any,                 x86_64_linux: "1643cb622d8afa788730f61a5653f3489ec59bd3ed0a7e5e2595fb659dc0e7c5"
+    root_url "https://github.com/mbuvarp/homebrew-trans/releases/download/trans-0.7.0"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe:  "98cf89abf88992a99fab817e50465a50444fd9138b844e4a6198b1383dd994f7"
+    sha256 cellar: :any_skip_relocation, sequoia:      "295f51e965eeb8a7051fc04d0a80e81620bdd5c5b70c307ace5c86335830d851"
+    sha256 cellar: :any,                 x86_64_linux: "38576a03df895867295faf43df9cc1402a205385f4b980bbf836812d3a957baa"
   end
 
   depends_on "rust" => :build
