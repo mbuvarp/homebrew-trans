@@ -44,3 +44,59 @@ jobs:
         uses: Homebrew/actions/git-try-push@1f8e202ffddf94def7f42f6fa3a482e821489f9c # 2026.07.10.1
         with:
           branch: main
+
+      - name: Delete published update branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          PULL_REQUEST: ${{ inputs.pull_request }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$HEAD_SHA" ]]; then
+            echo "Skipping branch cleanup because no reviewed head SHA was provided."
+            exit 0
+          fi
+
+          metadata=""
+          state=""
+          for attempt in {1..12}; do
+            metadata="$(
+              gh api "repos/${GITHUB_REPOSITORY}/pulls/${PULL_REQUEST}" \
+                --jq '[.state, .merged, .head.repo.full_name, .head.ref, .head.sha] | map(tostring) | join("|")'
+            )"
+            IFS='|' read -r state merged head_repository head_ref head_sha <<<"$metadata"
+            if [[ "$state" == "closed" ]]; then
+              break
+            fi
+            if [[ "$state" != "open" ]]; then
+              echo "Skipping branch cleanup for unexpected PR state: $state"
+              exit 0
+            fi
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "Skipping branch cleanup because the published PR is still open."
+              exit 0
+            fi
+            sleep 5
+          done
+
+          if [[ "$merged" != "false" ]]; then
+            echo "Skipping branch cleanup because the PR was merged."
+            exit 0
+          fi
+          if [[ "$head_repository" != "$GITHUB_REPOSITORY" ]]; then
+            echo "Skipping branch cleanup for another repository: $head_repository"
+            exit 0
+          fi
+          if [[ ! "$head_ref" =~ ^update-trans-v[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Skipping branch cleanup for an unexpected branch: $head_ref"
+            exit 0
+          fi
+          if [[ "$head_sha" != "$HEAD_SHA" ]]; then
+            echo "Skipping branch cleanup because the head SHA changed."
+            exit 0
+          fi
+
+          gh api \
+            --method DELETE \
+            "repos/${GITHUB_REPOSITORY}/git/refs/heads/${head_ref}"
